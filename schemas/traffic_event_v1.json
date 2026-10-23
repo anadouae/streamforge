@@ -1,0 +1,16 @@
+{
+  "required": [
+    "eventId",
+    "eventType",
+    "eventTimestamp",
+    "sourceId",
+    "spatialEntityId",
+    "schemaVersion",
+    "measurementName",
+    "measurementValue",
+    "measurementUnit",
+    "qualityStatus",
+    "sourceKind"
+  ],
+  "schemaVersion": "1.0.0"
+}
