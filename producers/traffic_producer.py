@@ -8,23 +8,19 @@ import json
 import math
 import time
 from datetime import datetime, timezone
+import sys
 from pathlib import Path
 from uuid import uuid4
 
 from kafka import KafkaProducer
 
-REQUIRED = json.loads((Path(__file__).resolve().parents[1] / "schemas/traffic_event_v1.json").read_text())[
-    "required"
-]
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from streamforge.validation import validate_event
+
 SEGMENTS = [f"sf-seg-{i}" for i in range(1, 9)]
-
-
-def validate(event: dict) -> None:
-    missing = [k for k in REQUIRED if k not in event]
-    if missing:
-        raise ValueError(f"missing fields: {missing}")
-    if event["schemaVersion"] != "1.0.0":
-        raise ValueError("unsupported schemaVersion")
 
 
 def main() -> int:
@@ -59,7 +55,7 @@ def main() -> int:
                 "qualityStatus": "ok",
                 "sourceKind": "SIMULATED",
             }
-            validate(event)
+            validate_event(event)
             producer.send(args.topic, key=seg, value=event)
             sent += 1
             time.sleep(0.01)
